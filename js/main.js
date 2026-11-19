@@ -15,8 +15,25 @@ function update(dt) {
   else if (scene === 'ending') updateEnding(dt);
 }
 
+/* куда смотрит «камера» в каждом кадре: на телефоне сцена обрезана по бокам */
+function sceneCameraX() {
+  // платформер сам двигает мир внутри кадра — внешняя камера ему не нужна
+  if (scene === 'platformer') return 0;
+  const centers = {
+    title: 700,
+    meadow: 470,
+    boss: (HER_X + BOSS_X) / 2,
+    cage: 480,
+    ending: 480,
+  };
+  const cx = centers[scene] != null ? centers[scene] : W / 2;
+  return clamp(cx - view.w / 2, 0, W - view.w);
+}
+
 function render() {
-  g.setTransform(viewScale, 0, 0, viewScale, 0, 0);
+  const camX = sceneCameraX();
+  const camY = Math.max(0, (H - view.h) / 2);
+  g.setTransform(view.scale, 0, 0, view.scale, -camX * view.scale, -camY * view.scale);
   g.clearRect(0, 0, W, H);
 
   if (scene === 'title') drawTitleScene();
@@ -72,6 +89,11 @@ function boot() {
     setScene(hash);
   } else {
     setScene('title');
+  }
+  resizeCanvas();
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', resizeCanvas);
   }
 
   requestAnimationFrame(loop);

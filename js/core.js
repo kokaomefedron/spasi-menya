@@ -3,7 +3,7 @@
    ============================================================ */
 
 /* ♥♥♥  ЕЁ ИМЯ — поменяй здесь, и оно появится в финале  ♥♥♥ */
-const HER_NAME = 'Любимая';
+const HER_NAME = 'Алина';
 
 const W = 960;
 const H = 540;
@@ -13,7 +13,8 @@ const stage = document.getElementById('stage');
 const canvas = document.getElementById('game');
 const g = canvas.getContext('2d');
 
-let viewScale = 1;
+/* видимая часть мира: на телефоне это высокий «портретный» кадр */
+const view = { w: W, h: H, scale: 1, dpr: 1, portrait: false, artH: 0 };
 let T = 0;
 
 /* ---------- DOM ---------- */
@@ -26,6 +27,8 @@ const dom = {
   dlgNext: document.getElementById('dlg-next'),
   hud: document.getElementById('hud'),
   heartCount: document.getElementById('heart-count'),
+  caption: document.getElementById('scene-caption'),
+  captionText: document.getElementById('cap-text'),
   bossUI: document.getElementById('boss-ui'),
   herHearts: document.getElementById('her-hearts'),
   bossBar: document.getElementById('boss-bar'),
@@ -52,11 +55,25 @@ const dist = (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1);
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
 function resizeCanvas() {
-  const r = stage.getBoundingClientRect();
+  const r = canvas.getBoundingClientRect();
+  if (r.width < 2 || r.height < 2) return;
+
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = Math.max(1, Math.round(r.width * dpr));
-  canvas.height = Math.max(1, Math.round(r.height * dpr));
-  viewScale = canvas.width / W;
+  const cw = Math.max(1, Math.round(r.width * dpr));
+  const ch = Math.max(1, Math.round(r.height * dpr));
+  if (canvas.width !== cw) canvas.width = cw;
+  if (canvas.height !== ch) canvas.height = ch;
+
+  // «cover»: мир 960×540 всегда заполняет экран, лишнее мягко обрезается
+  const s = Math.max(r.width / W, r.height / H);
+  view.scale = s * dpr;
+  view.w = r.width / s;
+  view.h = r.height / s;
+  view.dpr = dpr;
+  view.artH = r.height;
+  view.portrait = window.innerHeight > window.innerWidth;
+
+  if (typeof syncStageLayout === 'function') syncStageLayout();
 }
 
 /* ---------- ввод ---------- */
@@ -94,6 +111,7 @@ stage.addEventListener('pointerdown', e => {
   Sound.init();
   if (e.target.closest('button')) return;
   if (Dialogue.active) Dialogue.advance();
+  else if (scene === 'title') startGame();
 });
 
 /* мобильные кнопки */

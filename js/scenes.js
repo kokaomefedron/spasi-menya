@@ -6,9 +6,15 @@ let scene = 'title';
 let sceneT = 0;
 let starting = false;
 
+const SCENE_CAPTIONS = {
+  meadow: 'поляна',
+  cage: 'клетка',
+};
+
 function setScene(name) {
   scene = name;
   sceneT = 0;
+  document.body.dataset.scene = name;
 
   Dialogue.active = false;
   Dialogue.onEnd = null;
@@ -20,11 +26,18 @@ function setScene(name) {
   dom.touch.classList.add('hidden');
   dom.attackBtn.disabled = true;
 
+  const caption = SCENE_CAPTIONS[name];
+  dom.caption.classList.toggle('hidden', !caption);
+  if (caption) dom.captionText.textContent = caption;
+
   if (name === 'meadow') initMeadow();
   else if (name === 'platformer') initPlatformer();
   else if (name === 'boss') initBoss();
   else if (name === 'cage') initCage();
   else if (name === 'ending') initEnding();
+
+  // высота «экрана» зависит от сцены — пересчитываем кадр
+  resizeCanvas();
 }
 
 function goTo(name) {
@@ -117,7 +130,7 @@ const meadow = {
 };
 
 const MEADOW_LINES = [
-  { who: 'Люми', text: 'Ой! Ты всё-таки пришла. Я знала, что ты придёшь.' },
+  { who: 'Люми', text: 'Ой! Алина! Ты всё-таки пришла. Я знала, что ты придёшь.' },
   { who: 'Люми', text: 'Только... не пугайся. Его заперли. В клетке. На вершине Башни Сомнений.' },
   { who: 'Ты', text: 'Кто запер?' },
   { who: 'Люми', text: 'Сомнение. Оно живёт там, где страшно надеяться. Оно говорит, что вас нельзя любить просто так.' },
@@ -495,7 +508,7 @@ function updatePlatformer(dt) {
   }
 
   // камера
-  const target = clamp(p.x - W * 0.38, 0, LEVEL.width - W);
+  const target = clamp(p.x - view.w * 0.45, 0, LEVEL.width - view.w);
   cam.x = lerp(cam.x, target, 1 - Math.pow(0.0006, dt));
 
   levelState.hint = Math.max(0, levelState.hint - dt);
@@ -544,7 +557,7 @@ function drawPlatformer() {
   drawParticles(g, 'screen', 0);
 
   drawPlatformHint();
-  drawVignette(0.46);
+  drawVignette(0.46, view.portrait ? view.w / 2 : W / 2);
 }
 
 function drawPlatformHint() {
@@ -557,7 +570,8 @@ function drawPlatformHint() {
   g.fillStyle = 'rgba(255,236,222,.8)';
   g.shadowColor = 'rgba(0,0,0,.85)';
   g.shadowBlur = 10;
-  g.fillText('← →  идти        ↑  прыгать        собери сердечки', W / 2, H - 30);
+  const hintX = view.portrait ? view.w / 2 : W / 2;
+  g.fillText(view.portrait ? 'собирай сердечки ♥  ·  прыгай выше' : '← →  идти        ↑  прыгать        собери сердечки', hintX, H - 30);
   g.restore();
 }
 
@@ -803,8 +817,9 @@ function drawHeartPickup(h) {
 }
 
 /* ---------- общее ---------- */
-function drawVignette(a) {
-  const vg = g.createRadialGradient(W / 2, H * 0.46, H * 0.36, W / 2, H * 0.52, H * 1.02);
+function drawVignette(a, cx) {
+  if (cx == null) cx = W / 2;
+  const vg = g.createRadialGradient(cx, H * 0.46, H * 0.36, cx, H * 0.52, H * 1.02);
   vg.addColorStop(0, 'rgba(0,0,0,0)');
   vg.addColorStop(1, `rgba(4,2,10,${a})`);
   g.fillStyle = vg;

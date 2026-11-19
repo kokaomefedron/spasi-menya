@@ -4,10 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#0b0718">
-<title>Спаси меня — маленькая история для тебя</title>
-<link rel="stylesheet" href="style.css?v=8">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>Спаси меня — маленькая история для Алины</title>
+<link rel="stylesheet" href="style.css?v=9">
 </head>
-<body>
+<body data-scene="title">
 <div id="stage">
   <canvas id="game" aria-label="Игра"></canvas>
 
@@ -15,11 +20,11 @@
 
     <!-- ТИТУЛЬНЫЙ ЭКРАН -->
     <div id="title-screen">
-      <div class="title-kicker">маленькая история для тебя</div>
+      <div class="title-kicker">маленькая история для Алины</div>
       <h1 class="game-title">Спаси <span class="accent">меня</span></h1>
       <p class="title-sub">иногда, чтобы спасти кого-то,<br>достаточно просто дойти до него.</p>
       <button id="start-btn" class="btn primary">начать <span class="heart">♥</span></button>
-      <div class="title-hint">лучше в наушниках · стрелки или касания</div>
+      <div class="title-hint">лучше в наушниках · просто касайся</div>
     </div>
 
     <!-- ДИАЛОГИ -->
@@ -29,6 +34,13 @@
         <div class="dlg-text" id="dlg-text"></div>
         <div class="dlg-next" id="dlg-next">нажми, чтобы продолжить <span>▸</span></div>
       </div>
+    </div>
+
+    <!-- НАЗВАНИЕ СЦЕНЫ (портрет) -->
+    <div id="scene-caption" class="hidden">
+      <span class="cap-line"></span>
+      <span id="cap-text">поляна</span>
+      <span class="cap-line"></span>
     </div>
 
     <!-- HUD ПЛАТФОРМЕРА -->
@@ -60,8 +72,8 @@
       <div class="ending-inner">
         <div class="ending-kicker">и с тех пор сомнения больше не приходили</div>
         <h2 class="love-title"><span>Я</span> <span>люблю</span><br><span class="big">тебя</span><span class="heart-mark">♥</span></h2>
-        <div class="ending-name" id="ending-name">для тебя, Любимая</div>
-        <p class="ending-note">спасибо, что нашла меня.<br>навсегда твой.</p>
+        <div class="ending-name" id="ending-name">для тебя, Алина</div>
+        <p class="ending-note">спасибо, что нашла меня.<br>навсегда твой, Женя.</p>
         <button id="replay-btn" class="btn ghost">пройти ещё раз</button>
       </div>
     </div>
@@ -84,10 +96,10 @@
   <div id="fader"></div>
 </div>
 
-<script src="js/core.js"></script>
-<script src="js/art.js"></script>
-<script src="js/scenes.js"></script>
-<script src="js/story.js"></script>
-<script src="js/main.js"></script>
+<script src="js/core.js?v=9"></script>
+<script src="js/art.js?v=9"></script>
+<script src="js/scenes.js?v=9"></script>
+<script src="js/story.js?v=9"></script>
+<script src="js/main.js?v=9"></script>
 </body>
 </html>
