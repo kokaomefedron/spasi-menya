@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b0718">
+<title>Спаси меня — маленькая история для тебя</title>
+<link rel="stylesheet" href="style.css?v=8">
+</head>
+<body>
+<div id="stage">
+  <canvas id="game" aria-label="Игра"></canvas>
+
+  <div id="ui">
+
+    <!-- ТИТУЛЬНЫЙ ЭКРАН -->
+    <div id="title-screen">
+      <div class="title-kicker">маленькая история для тебя</div>
+      <h1 class="game-title">Спаси <span class="accent">меня</span></h1>
+      <p class="title-sub">иногда, чтобы спасти кого-то,<br>достаточно просто дойти до него.</p>
+      <button id="start-btn" class="btn primary">начать <span class="heart">♥</span></button>
+      <div class="title-hint">лучше в наушниках · стрелки или касания</div>
+    </div>
+
+    <!-- ДИАЛОГИ -->
+    <div id="dialogue" class="hidden">
+      <div class="dlg-card">
+        <div class="dlg-name" id="dlg-name" data-who="npc">Люми</div>
+        <div class="dlg-text" id="dlg-text"></div>
+        <div class="dlg-next" id="dlg-next">нажми, чтобы продолжить <span>▸</span></div>
+      </div>
+    </div>
+
+    <!-- HUD ПЛАТФОРМЕРА -->
+    <div id="hud" class="hidden">
+      <div class="hud-hearts"><span class="hud-heart">♥</span><span id="heart-count">0</span><span class="hud-total">/ 7</span></div>
+      <div class="hud-quest">спасти его</div>
+    </div>
+
+    <!-- БОСС -->
+    <div id="boss-ui" class="hidden">
+      <div class="boss-top">
+        <div class="fighter-panel her">
+          <div class="fname">Ты</div>
+          <div id="her-hearts" class="hearts-row"></div>
+        </div>
+        <div class="fighter-panel boss">
+          <div class="fname">Сомнение</div>
+          <div class="bar"><i id="boss-bar"></i></div>
+        </div>
+      </div>
+      <div class="boss-bottom">
+        <div id="boss-log" class="boss-log"></div>
+        <button id="attack-btn" class="btn attack" disabled><span class="heart">♥</span> ударить любовью</button>
+      </div>
+    </div>
+
+    <!-- ФИНАЛ -->
+    <div id="ending" class="hidden">
+      <div class="ending-inner">
+        <div class="ending-kicker">и с тех пор сомнения больше не приходили</div>
+        <h2 class="love-title"><span>Я</span> <span>люблю</span><br><span class="big">тебя</span><span class="heart-mark">♥</span></h2>
+        <div class="ending-name" id="ending-name">для тебя, Любимая</div>
+        <p class="ending-note">спасибо, что нашла меня.<br>навсегда твой.</p>
+        <button id="replay-btn" class="btn ghost">пройти ещё раз</button>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <button id="sound-btn" class="icon-btn" aria-label="звук">♪</button>
+
+    <!-- МОБИЛЬНОЕ УПРАВЛЕНИЕ -->
+    <div id="touch" class="hidden">
+      <div class="touch-left">
+        <button class="tbtn" data-key="left" aria-label="влево">◀</button>
+        <button class="tbtn" data-key="right" aria-label="вправо">▶</button>
+      </div>
+      <button class="tbtn jump" data-key="jump" aria-label="прыжок">▲</button>
+    </div>
+
+  </div>
+
+  <div id="fader"></div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/art.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/story.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
