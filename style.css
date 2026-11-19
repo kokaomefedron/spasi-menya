@@ -8,6 +8,7 @@ html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
   background: #060310;
 }
 
@@ -18,6 +19,8 @@ body {
   font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
   color: #f7ece3;
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -228,6 +231,10 @@ button {
 .dlg-next.show { opacity: 1; animation: pulseSoft 1.8s ease-in-out infinite; }
 
 @keyframes pulseSoft { 0%, 100% { opacity: .45; } 50% { opacity: .95; } }
+
+/* ---------- подпись сцены (только на телефоне) ---------- */
+
+#scene-caption { display: none; }
 
 /* ---------- HUD платформера ---------- */
 
@@ -521,44 +528,235 @@ button {
   .title-sub { margin-bottom: 2.6vh; }
 }
 
-/* портретный экран: сцена — широкая полоса, поэтому оверлеи компактнее */
+/* ============================================================
+   ТЕЛЕФОН ВЕРТИКАЛЬНО — главный режим
+   ============================================================ */
+
 @media (orientation: portrait) {
-  .title-kicker { margin-bottom: 1.4vh; }
-  .game-title { font-size: clamp(34px, 10vmin, 84px); margin-bottom: 1.6vh; }
-  .title-sub { font-size: clamp(12px, 2.6vmin, 17px); margin-bottom: 2.2vh; }
-  .title-hint { display: none; }
+  body {
+    display: block;
+    touch-action: manipulation;
+  }
 
-  #dialogue { bottom: 2.4%; }
-  .dlg-card { padding: 10px clamp(14px, 3vw, 22px) 22px; border-radius: 14px; }
-  .dlg-name { font-size: clamp(9px, 2vmin, 12px); }
-  .dlg-text { font-size: clamp(13px, 2.7vmin, 18px); min-height: 2.2em; }
+  /* вся сцена занимает экран, а мир рисуется в верхнем «окне» */
+  #stage {
+    --art-vh: 46;
+    --art-h: calc(var(--art-vh) * 1vh);
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    box-shadow: none;
+    background:
+      radial-gradient(120% 55% at 50% 0%, rgba(128, 64, 178, .30) 0%, rgba(30, 14, 56, 0) 62%),
+      radial-gradient(90% 45% at 50% 100%, rgba(255, 92, 140, .14) 0%, rgba(20, 10, 40, 0) 72%),
+      linear-gradient(180deg, #0c0719 0%, #090513 48%, #05030c 100%);
+  }
+  @supports (height: 100dvh) {
+    #stage {
+      height: 100dvh;
+      --art-h: calc(var(--art-vh) * 1dvh);
+    }
+  }
 
-  .boss-top { padding-top: 2.4vh; }
-  .boss-bottom {
-    flex-direction: row;
-    justify-content: center;
+  body[data-scene="title"]      #stage { --art-vh: 46; }
+  body[data-scene="meadow"]     #stage { --art-vh: 46; }
+  body[data-scene="platformer"] #stage { --art-vh: 55; }
+  body[data-scene="boss"]       #stage { --art-vh: 44; }
+  body[data-scene="cage"]       #stage { --art-vh: 44; }
+  body[data-scene="ending"]     #stage { --art-vh: 40; }
+
+  canvas {
+    inset: 0 0 auto 0;
+    width: 100%;
+    height: var(--art-h);
+    border-radius: 0 0 22px 22px;
+    background: #0a0616;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .55);
+  }
+
+  #ui { font-size: 16px; }
+
+  /* ---------- титул ---------- */
+  #title-screen {
+    padding: calc(var(--art-h) + 2.4vh) 8.5% calc(env(safe-area-inset-bottom) + 3vh);
     align-items: center;
-    gap: 2.4%;
-    bottom: 1.2%;
-    padding: 0 2%;
+    justify-content: flex-start;
+    text-align: center;
+  }
+  #title-screen > div { max-width: 100%; }
+  .title-kicker {
+    font-size: 9px;
+    letter-spacing: .28em;
+    margin-bottom: 1.5vh;
+  }
+  .game-title {
+    font-size: clamp(42px, 16vw, 76px);
+    line-height: .9;
+    margin-bottom: 1.8vh;
+  }
+  .title-sub {
+    font-size: clamp(14px, 4.1vw, 17px);
+    line-height: 1.55;
+    margin-bottom: 3vh;
+  }
+  #start-btn {
+    width: min(320px, 90%);
+    min-height: 56px;
+    font-size: 17px;
+  }
+  .title-hint {
+    display: block;
+    font-size: 11px;
+    margin-top: 1.6vh;
+  }
+
+  /* ---------- диалог: нижняя карточка ---------- */
+  #dialogue {
+    bottom: 0;
+    padding: 0 12px calc(env(safe-area-inset-bottom) + 10px);
+  }
+  .dlg-card {
+    width: 100%;
+    border-radius: 20px;
+    padding: 17px 18px 30px;
+    background: linear-gradient(180deg, rgba(32, 20, 54, .96) 0%, rgba(11, 7, 22, .98) 100%);
+    box-shadow: 0 -10px 50px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .07);
+  }
+  .dlg-name { left: 16px; top: -10px; font-size: 10px; }
+  .dlg-text { font-size: 16px; line-height: 1.5; min-height: 2.9em; }
+  .dlg-next { right: 16px; bottom: 9px; font-size: 10px; }
+
+  /* ---------- подпись сцены ---------- */
+  #scene-caption {
+    position: absolute;
+    top: calc(var(--art-h) + 20px);
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 9px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: rgba(255, 218, 198, .42);
+    pointer-events: none;
+    animation: captionIn .8s ease both;
+  }
+  #scene-caption .cap-line {
+    width: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 186, 166, .38));
+  }
+  #scene-caption .cap-line:last-child { transform: scaleX(-1); }
+  @keyframes captionIn { from { opacity: 0; transform: translateY(6px); } }
+
+  /* ---------- HUD ---------- */
+  #hud {
+    top: calc(var(--art-h) + 12px);
+    left: 0;
+    right: 0;
+    justify-content: center;
+    gap: 10px;
+  }
+  .hud-hearts { font-size: 14px; padding: .5em 1em; }
+  .hud-quest { font-size: 9px; letter-spacing: .18em; }
+
+  /* ---------- босс ---------- */
+  .boss-top {
+    position: absolute;
+    top: calc(var(--art-h) + 10px);
+    left: 0;
+    right: 0;
+    padding: 0 12px;
+    gap: 10px;
+  }
+  .fighter-panel {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 12px;
+    border-radius: 14px;
+  }
+  .fighter-panel.boss { margin-right: 0; }
+  .fighter-panel .fname { font-size: 9px; margin-bottom: .35em; }
+  .hearts-row { font-size: 16px; gap: 3px; }
+  .bar { width: 100%; height: 9px; }
+  .boss-bottom {
+    top: calc(var(--art-h) + 92px);
+    bottom: calc(env(safe-area-inset-bottom) + 16px);
+    padding: 0 18px;
+    justify-content: center;
+    gap: 20px;
   }
   .boss-log {
-    min-height: 0;
-    max-width: 62%;
-    font-size: clamp(10px, 2.3vmin, 15px);
-    line-height: 1.3;
-    text-align: left;
+    font-size: 15px;
+    line-height: 1.45;
+    min-height: 2.8em;
+    max-width: 100%;
   }
-  .btn.attack {
-    font-size: clamp(11px, 2.2vmin, 15px);
-    padding: .6em 1.1em;
-  }
+  .btn.attack { width: min(320px, 100%); min-height: 56px; font-size: 16px; }
 
-  #ending { align-items: flex-start; padding: 1vh 4% 0; }
-  .ending-kicker { display: none; }
-  .love-title { font-size: clamp(28px, 9vmin, 72px); }
-  .ending-name { margin-top: .8vh; }
-  .ending-note { margin: .8vh auto 1.2vh; }
+  /* ---------- финал ---------- */
+  #ending {
+    top: var(--art-h);
+    padding: 2.4vh 7% calc(env(safe-area-inset-bottom) + 3vh);
+    align-items: stretch;
+    background: linear-gradient(180deg, rgba(6, 3, 16, .55) 0%, rgba(6, 3, 16, .86) 34%, rgba(6, 3, 16, .97) 100%);
+  }
+  .ending-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+  }
+  .ending-kicker {
+    font-size: 9px;
+    letter-spacing: .14em;
+    line-height: 1.55;
+    margin-bottom: 2.2vh;
+  }
+  .love-title { font-size: clamp(40px, 14.5vw, 72px); line-height: .98; }
+  .ending-name { font-size: clamp(17px, 5vw, 22px); margin-top: 2vh; }
+  .ending-note { font-size: 13px; line-height: 1.6; margin: 2vh auto 0; }
+  #replay-btn { margin-top: auto; min-height: 50px; font-size: 15px; }
+
+  /* ---------- управление ---------- */
+  #touch .tbtn {
+    width: clamp(58px, 16vw, 72px);
+    height: clamp(58px, 16vw, 72px);
+    font-size: 22px;
+    background: rgba(22, 13, 38, .62);
+  }
+  .touch-left { left: 6%; bottom: calc(env(safe-area-inset-bottom) + 9vh); gap: 14px; }
+  #touch .jump { right: 6%; bottom: calc(env(safe-area-inset-bottom) + 9vh); }
+
+  /* ---------- мелочи ---------- */
+  #sound-btn {
+    top: calc(env(safe-area-inset-top) + 8px);
+    right: 12px;
+    width: 46px;
+    height: 46px;
+    font-size: 18px;
+  }
+  #toast {
+    top: calc(env(safe-area-inset-top) + 62px);
+    max-width: 88%;
+    white-space: normal;
+    text-align: center;
+    font-size: 12px;
+  }
+}
+
+/* компактные телефоны: чуть меньше арт и отступы, чтобы всё влезло */
+@media (orientation: portrait) and (max-height: 700px) {
+  body[data-scene="title"] #stage { --art-vh: 42; }
+  .title-hint { display: none; }
+  .title-sub { margin-bottom: 2.2vh; }
+  .love-title { font-size: clamp(36px, 13vw, 60px); }
+  .ending-note { margin-top: 1.4vh; }
 }
 
 /* на устройствах с мышью экранные кнопки не нужны — есть клавиатура */
